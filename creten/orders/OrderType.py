@@ -1,0 +1,5 @@
+class OrderType:
+	MARKET = 1
+	LIMIT = 2
+	STOP_LOSS_LIMIT = 3
+	STOP_LOSS_MARKET = 4

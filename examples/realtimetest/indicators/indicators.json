@@ -1,0 +1,143 @@
+{
+	"realtimetest": {
+			"strategies": [
+				{
+					"strategy_name": "IndicatorMonitor",
+					"module_path": "strategy_repository.IndicatorMonitor",
+                    "params": {
+	                    "ALMA": {
+		                    "window": 20,
+		                    "offset": 0.85,
+		                    "sigma": 6
+	                    },
+	                    "ADX": {
+		                    "periodDI": 14,
+		                    "periodADX": 14
+	                    },
+	                    "AO": {
+		                    "periodFast": 5,
+		                    "periodSlow": 34
+	                    },
+	                    "ATR": {
+		                    "period": 14
+	                    },
+	                    "BB": {
+		                    "period": 20,
+		                    "stdDevMult": 2
+	                    },
+	                    "ChaikinOsc": {
+		                    "periodFast": 3,
+		                    "periodSlow": 10
+	                    },
+	                    "DonchianChannels": {
+		                    "period": 20
+	                    },
+	                    "EMA": {
+		                    "period": 10
+	                    },
+	                    "DEMA": {
+		                    "period": 25
+	                    },
+	                    "HMA": {
+		                    "period": 16
+	                    },
+	                    "Ichimoku": {
+		                    "kijunPeriod": 26,
+		                    "tenkanPeriod": 9,
+		                    "chikouLagPeriod": 26,
+		                    "senkouSlowPeriod": 52,
+		                    "senkouLookUpPeriod": 26
+	                    },
+	                    "KeltnerChannels": {
+		                    "maPeriod": 20,
+		                    "atrPeriod": 10,
+		                    "atrMultUp": 2,
+		                    "atrMultDown": 2
+	                    },
+	                    "KST": {
+		                    "roc1Period": 10,
+		                    "roc1MAPeriod": 10,
+		                    "roc2Period": 15,
+		                    "roc2MAPeriod": 10,
+		                    "roc3Period": 20,
+		                    "roc3MAPeriod": 10,
+		                    "roc4Period": 30,
+		                    "roc4MAPeriod": 15,
+		                    "signalPeriod": 9
+	                    },
+	                    "MassIndex": {
+		                    "emaPeriod": 9,
+		                    "demaPeriod": 9,
+		                    "emaRatioPeriod": 25
+	                    },
+	                    "MACD": {
+		                    "fastPeriod": 12,
+		                    "slowPeriod": 26,
+		                    "signalPeriod": 9
+	                    },
+	                    "OBV": {
+	                    },
+	                    "PivotsHL": {
+		                    "highDist": 50,
+		                    "lowDist": 50
+	                    },
+	                    "RMA": {
+		                    "period": 10
+	                    },
+	                    "RSI": {
+		                    "period": 14
+	                    },
+	                    "ROC": {
+		                    "period": 9
+	                    },
+	                    "SAR": {
+		                    "initAccelFactor": 0.02,
+		                    "accelFactorInc": 0.02,
+		                    "maxAccelFactor": 0.2
+	                    },
+	                    "SFX": {
+		                    "atrPeriod": 12,
+		                    "stdDevPeriod": 12,
+		                    "stdDevSmoothing": 3
+	                    },
+	                    "SMA": {
+		                    "period": 10
+	                    },
+	                    "SOBV": {
+		                    "period": 5
+	                    },
+	                    "Stoch": {
+		                    "stochPeriod": 14,
+		                    "smoothingPeriod": 3
+	                    },
+	                    "StochRSI": {
+		                    "rsiPeriod": 14,
+		                    "stochPeriod": 14,
+		                    "smoothingPeriodK": 3,
+		                    "smoothingPeriodD": 3
+	                    },
+	                    "TEMA": {
+		                    "period": 10
+	                    },
+	                    "UO": {
+		                    "periodFast": 7,
+		                    "periodMid": 14,
+		                    "periodSlow": 28
+	                    },
+	                    "VWMA": {
+		                    "period": 10
+	                    },
+	                    "WMA": {
+		                    "period": 16
+	                    },
+	                    "onClose": false
+                    },
+					"dscp": ""
+				}
+			],
+			"pairs": [
+				["BTC", "USDT"]
+			],
+			"interval": "1DAY"
+	}
+}

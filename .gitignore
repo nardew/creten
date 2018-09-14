@@ -1,0 +1,12 @@
+# misc
+temporary
+*.log
+.DS_Store
+
+# pycharm
+venv
+.idea
+environment.env
+
+# python
+*.pyc

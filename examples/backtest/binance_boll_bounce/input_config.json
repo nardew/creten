@@ -1,0 +1,29 @@
+{
+	"backtest": [
+		{
+			"strategies": [
+				{
+					"strategy_name": "BollingerBounceStrategy",
+					"module_path": "strategy_repository.BollingerBounceStrategy",
+					"params": {
+						"period": 20,
+						"stdDevMult": 2,
+						"lookBackPeriod": 10
+					}
+				}
+			],
+			"pairs": [
+				["BTC", "USDT"]
+			],
+			"interval": "1HOUR",
+			"start_tmstmp": "20180101000000",
+			"end_tmstmp": "20190101000000",
+			"portfolio": [
+				{
+					"asset": "USDT",
+					"quantity": 0
+				}
+			]
+		}
+	]
+}

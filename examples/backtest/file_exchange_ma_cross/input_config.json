@@ -1,0 +1,28 @@
+{
+	"backtest": [
+		{
+			"strategies": [
+				{
+					"strategy_name": "MACrossStrategy",
+					"module_path": "strategy_repository.MACrossStrategy",
+					"params": {
+						"slow_ma": 20,
+						"fast_ma": 40
+					}
+				}
+			],
+			"pairs": [
+				["BTC", "USDT"]
+			],
+			"interval": "1DAY",
+			"start_tmstmp": "20090901000000",
+			"end_tmstmp": "20180801000000",
+			"portfolio": [
+				{
+					"asset": "USDT",
+					"quantity": 0
+				}
+			]
+		}
+	]
+}

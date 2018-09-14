@@ -1,0 +1,7 @@
+class TradeState:
+	OPEN_PENDING = 1
+	OPEN_FAILED = 2
+	OPENED = 3
+	CLOSE_PENDING = 4
+	CLOSE_FAILED = 5
+	CLOSED = 6

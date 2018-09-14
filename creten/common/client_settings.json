@@ -1,0 +1,10 @@
+{
+	"DB_CONNECTION": {
+		"ENGINE": "mysql+pymysql",
+		"HOST": "127.0.0.1",
+		"PORT": 3306,
+		"DB": "creten",
+		"USER": "creten",
+		"PASSWORD": "creten"
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"baseAsset": "BTC",
+	"quoteAsset": "USDT",
+	"rules": {
+		"baseAssetPrecision": "2",
+		"quoteAssetPrecision": "2",
+		"minPrice": "0.01",
+		"maxPrice": "9999",
+		"minPriceDenom": "0.01",
+		"minQty": "0.01",
+		"maxQty": "9999",
+		"minQtyDenom": "0.01",
+		"minNotional": "1"
+	},
+	"data": {
+		"inputFile": "./apple.csv",
+		"separator": ",",
+		"fieldIndex": {
+			"openTmstmp": 0,
+			"open": 3,
+			"high": 4,
+			"low": 5,
+			"close": 1,
+			"volume": 2
+		},
+		"timeFormat": "%Y/%m/%d",
+		"interval": "1DAY"
+	}
+}
