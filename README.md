@@ -78,15 +78,15 @@ In order to be able to run predefined examples, you need to setup an environment
 There are several examples bundled with `creten`, to verify that installation of `creten` has been successful, execute one of them.
 
 - backtest moving average cross strategy on offline data
-  ```
-  (creten_env) $ cd examples/backtest/file_exchange_ma_cross
-  (creten_env) examples/backtest/file_exchange_ma_cross $ ./execute.sh
-  ```
+```
+(creten_env) $ cd examples/backtest/file_exchange_ma_cross
+(creten_env) examples/backtest/file_exchange_ma_cross $ ./execute.sh
+```
 - backtest bollinger bounce strategy on binance
-  ```
-  (creten_env) $ cd examples/backtest/binance_boll_bounce
-  (creten_env) examples/backtest/binance_boll_bounce $ ./execute.sh
-  ```
+```
+(creten_env) $ cd examples/backtest/binance_boll_bounce
+(creten_env) examples/backtest/binance_boll_bounce $ ./execute.sh
+```
 
 After running either of the examples you should see `creten` to execute the selected trading strategy and display results at the end. If it is what happend, then congratulation, you are set to create and execute your own trading strategies.
   
