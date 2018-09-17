@@ -2,19 +2,44 @@
 
 [![](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-2715/) [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/)
 
-_**Cr**ypto **E**xchange **T**rading **En**gine_, or **_creten_** for short, is a modern Python-based framework for developers and curious minds of all sorts helping them design, backtest and execute trading strategies in the evergrowing crypto market.
+_**Cr**ypto **E**xchange **T**rading **En**gine_, or **_creten_** for short, is a modern Python-based framework for developers and curious minds of all sorts who are after an elegant system to design, backtest and execute trading strategies in the evergrowing crypto market.
 
-First of all, it is important to understand that `creten` is **not** a trading bot that you install and it will make you rich, though there are many exemplary strategies bundled with the framework. The ultimate mission of `creten` is to equip developers with means (i.e. a framework) enabling them to quickly develop their own trading strategies, allow them to evaluate the performance via backtesting and realtime testing (paper trading) as easily as possible and once the state-of-the art strategy proves profitable, `creten` can execute it in real crypto market.
+First of all, it is important to understand that `creten` is **not** a trading bot that you install and become rich, though there are many exemplary strategies bundled with the framework. The ultimate mission of `creten` is to equip developers with means (a framework) enabling them to quickly develop their own trading strategies, evaluate their performance via backtesting and realtime testing (paper trading) and once the state-of-the art strategy proves profitable, execute them in real crypto market.
 
 ## Features
 
-- backtest, realtime test, trader
-- exchanges, file exchange
-- databases
-- indicators
-- market data
-- all order types
-- access to market data
+Devising a competitive trading strategy which is profitable long term and which outsmarts other participants in the market is unfortunately something that `creten` will not help you with. What it **will** help you with is to materialize your idea into a concise Python code, provide you with many standard and less standard technical indicators, let you test your strategy thoroughly on online or offline data, automate execution for as many currency pairs, time windows and timeframes as desirable and finally record statistics from every single run for sake of performance comparison. Once confidence is reached, `creten` can run as a trading bot in real market according to your strategy.
+
+#### Execution modes
+
+`creten` can run in three modes:
+1. **backtest**
+
+   Backtesting allows you to evaluate performance of your strategy on historical data. You have an option to backtest on offline data (stored in a csv file or database) or on online data downloaded from an exchange. The main parameters of backtest will be currency pair(s) (ETH/BTC, BTC/USDT, ADA/ETH, ...), time window of the data (arbitrary time span, the only limitation is your data source) and timeframe (from 1 minute up to 1 month).
+   
+1. **realtime test (paper trading)**
+
+   Unlike backting, realtime testing consists of listening to realtime market data feed (i.e. prices of the selected currency pairs) and simulating your strategy calls under real conditions. This type of testing is closer to real trading than backtesting is since you have access and can react to online data, such as prices and depth, in realtime. The results can be sometimes significantly different from backtesting which bases your calls only on the data captured at the candle close. The obvious disadvantage of realtime testing is the small testing set of input data, unless you leave realtime testing running for days or weeks.
+
+1. **real trader**
+
+   The last and the most exciting mode of `creten` is the real trading where you have skin in the game. Real trading is similar to realtime test, only you trade with real assets. Make sure that you let `creten` trade according to the strategy only if it earns consistently in backtesting and realtime testing. There is no warranty for loss of your resources, please read *Warranty* section carefully.
+   
+   __*Important note:*__ It goes without saying that `creten` was tested as much as possible in all three modes. Nevertheless, the real trading mode is currently *disabled* by default until `creten` undergoes wider testing from the community under conditions which were not initially assumed.
+
+#### Exchanges
+
+#### Technical indicators
+
+#### Order types
+
+#### Database engines
+
+#### Performance evaluation
+
+## Limitations
+
+No trading, no shorting, few exchanges
 
 ## Installation
 
@@ -24,49 +49,49 @@ Following paragraphs will guide you through the exhaustive set of steps to get `
 
 In order to be able to use `creten`, you need have following components installed on your system:
 - `git`
-- `Python 2.x` or `Python 3.x` (`creten` was intensively tested with Python 2.7 and Python 3.6)
+- `Python 2.x` or `Python 3.x` (`creten` was intensively tested with `Python 2.7` and `Python 3.6`)
 - a database engine (see *Features* section for supported engines)
 
 ##### 1. Clone `creten` to your local filesystem
 
-Choose destination folder where `creten` will be downloaded and run
+Choose a destination folder where `creten` will be downloaded and execute
 
 `$ git clone git@github.com:nardew/creten.git`
 
 ##### 2. Create and enter a Python virtual environment [optional]
 
-Since `creten` uses several external packages, it is recommended to use it in a Python's virtual environment in order to ease dependency download and resolution. Nevertheless, this step is not mandatory if you are experienced with installation and management of external dependencies.
+Since `creten` uses several external packages, it is recommended to run it in a Python's virtual environment in order to simplify dependency download and resolution. Nevertheless, this step is not mandatory if you are experienced with installation and management of external dependencies.
 
-To create an empty virtual environment, use following commands. Note that there is a plenty of documentation on the internet explaining virtual environments in detail.
+To create an empty virtual environment, use following commands. If you want learn more about Python's virtual environments consult one of the many online sources.
 ```
 $ virtualenv -p <python_version> <virtual_env_dir>, e.g. virtualenv -p python3 creten_env
 $ source creten_env/bin/activate
 (creten_env) $
 ```
-If all went well, you should see name of the virtual environment prepended to your command line.
+If all went well, you should see the name of the virtual environment prepended to your command line.
   
 ##### 3. Install dependencies
-`creten` contains file `creten/requirements.txt` which lists all mandatory dependencies. To download and install them, run:
+All external dependencies are provided in `creten/requirements.txt` file. To download and install them, run:
 
 `(creten_env) $ pip install -r requirements.txt`
 
-**Note:** The above will download all dependencies but the database engine interface. Database interface is not included in the file with requirements since different developers will use a different interface of their own choice and it is not practical to install all interfaces by default. Please install it manually (e.g. `pip install pymysql` for MySQL)
+**Note:** The above will download all dependencies but the database interface. Each developer will use the database engine of her/his own choice and it is not desirable to have all of them installed by default. Please install yours manually (e.g. `pip install pymysql` for MySQL).
 
-##### 4. Create database layout
+##### 4. Create a database layout
 
-Based on the database engine of your choice, manually apply one of the DDLs contained in `env_setup` folder:
+Based on the database engine of your choice, apply manually one of the DDLs contained in `env_setup` folder:
 - MySQL/MariaDB: `env_setup/DDL_MySQL.sql`
 - PostgreSQL: `env_setup/DDL_PostgreSQL.sql`
 - SQLite: `env_setup/DDL_SQLite.sql`
 
-##### 5. Check `creten` help page to verify installation
+##### 5. Check `creten`'s help page to verify installation
 `(creten_env) creten$ python creten.py -h`
 
 Above command should return description of all command line parameters.
 
 ##### 6. Setup environment variable for `creten` root directory
 
-In order to be able to run predefined examples, you need to setup an environment variable which will point to `creten`'s application folder (i.e. the one containing creten.py file, not its parent!). This step can be automated by updating the user's profile script. Once the environment variable is defined, source `profile.sh`.
+In order to be able to run predefined examples, you need to setup an environment variable which will point to `creten`'s application folder (i.e. the one containing `creten.py` file). This step can be automated by updating the user's profile script. Once the environment variable is defined, source `profile.sh`.
 
 ```
 (creten_env) $ export CRETEN_APP_ROOT_DIR=<creten application dir>
@@ -75,7 +100,7 @@ In order to be able to run predefined examples, you need to setup an environment
 
 ##### 7. Execute one of the bundled examples
 
-There are several examples bundled with `creten`, to verify that installation of `creten` has been successful, execute one of them.
+The easiest way to verify that `creten` was setup properly is to run one of the provided examples:
 
 - backtest moving average cross strategy on offline data
 ```
@@ -101,8 +126,12 @@ I am glad you asked! `creten` is still a young project and the biggest contribut
 
 ## Get in touch
 
-If you feel you want to get in touch, either with developers or community:
+If you feel you want to get in touch either with developers or community, you can:
 - use Github Issues if it is related to `creten` development
 - join the [Telegram group](https://t.me/joinchat/H-VJNFAYoelyD35GF6gojw)
 - follow [![Twitter Follow](https://img.shields.io/twitter/follow/cretenframework.svg?style=social&label=@cretenframework)](https://twitter.com/cretenframework)
 - send a good old e-mail to <img src="http://safemail.justlikeed.net/e/0d7145ca3282ff04393182056c826bc6.png" align="absbottom">
+
+## Warranty
+
+There is none. As it goes with open source, neither `creten` nor any of its developers is responsible for any loss due to your strategy or bugs in the code. By using it you acknowledge that you are aware of the risk and will suffer all potential consequencies. `creten` does not give any financial advice. If unsure, do not run `creten` in the real trading mode.
