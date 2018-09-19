@@ -57,7 +57,38 @@ We are already working on adding other exchanges. Currently each exchange is imp
 
 #### Order types
 
+When it comes to order types many available open source trading engines provide ability to file buy/sell order at market price, some allow you to create a limit order. While these are sufficient in majority of simpler strategies, more advanced strategies will definitely miss other order types which are supported by many exchanges. Goal of `creten` is to give as much power and freedom to developer as possible and therefore `creten` fully supports following order types:
+
+| Order type | Description |
+| --- | --- |
+buy/sell market order | buy/sell at the market price (order executed immediately)
+buy/sell limit order | buy/sell at specified price (order executed once specified price is reached)
+buy/sell stop loss market order | file a buy/sell market order when price reaches specified stop price
+buy/sell stop loss limit order | file a buy/sell limit order at specified price when price reaches specified stop price
+buy/sell take profit market order | similar to buy/sell stop loss limit order
+buy/sell take profit limit order | similar to buy/sell stop loss limit order 
+
+#### Trades vs. orders
+
+Most frameworks you find around view trades as a pair of orders where trade starts with a buy/sell order and ceases with the opposite order. This is perfectly fine for strategies where you repetitively buy and sell as a reaction to current market data. But what if your buying/selling approach is more sophisticated? What if you want to stack buying orders over time, for instance when market is evolving in your favour? Or what if you want to always place both a limit order and a stop loss at the same time and let either of the orders close the trade? What if you want to add several stop losses since you entered the trade? Many softwares with trades formed only of a pair of buy and sell orders will not provide this.
+
+`creten` was designed with above questions specifically in mind from the very beginning and its view of trades is more general. In fact, `creten` defines a trade as a set of orders of arbitrary number. Trade is initiated with the first order and closes when ceratin conditions are met (not necessarily when all orders are executed). To reuse previous example, imagine that your strategy is to first issue a buy market and a sell limit order together and then with each subsequent candle you place a new stop loss, e.g. using parabolic SAR. It means after 20 candles since the trade has been initiated your trade may be still active and will consit of 20 pending orders and you can continue adding additional orders of all types as you wish. The closing condition for this type of trade is that your (1) sell limit order or (2) stop loss order gets executed. When this happens, `creten` will automatically cancel the remaining pending orders since the trade is not active anymore.
+
+Being able to construct trades from many different orders and even update the set while trade is running gives developer a great opportunity to build his strategy without any limitation.
+
 #### Database engines
+
+Every `creten`'s execution is recorded in the database, including details of execution itself, details of all trades, details of all orders and so on and so forth. In other words, database and data stored in it are crucial driving elements of `creten`.
+
+`creten` is using modern and powerful `SQLAlchemy` ORM framework to abstract interaction with database engine and therefore it is able to run with most of the standard databases seemlessly. Database engines which were successfully tested with `creten` (and hence are officially supported) and for which `creten` contains environment preperation scripts (see *Installation* section) include:
+- SQLite
+- MySQL
+- MariaDB
+- PostgreSQL
+
+Supporting a new database engine is straightfowawrd. It is required only to:
+- make sure that the database engine is supported by `SQLAlchemy` in the first place (which should not be a concern)
+- create a new environment preparation DDL script if none of the existing ones can be reused (due to some specificities of the given DDL)
 
 #### Performance evaluation
 
@@ -145,7 +176,7 @@ After running either of the examples you should see `creten` to execute the sele
 
 I am glad you asked! `creten` is still a young project and the biggest contribution at the moment is to:
 - spread the word
-- file bugs, issues, feature requests or any critique in general
+- file bugs, issues, feature requests or any critique
 - feel free to come with your own idea :-)
 
 ## Get in touch
