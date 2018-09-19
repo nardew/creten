@@ -29,7 +29,31 @@ Devising a competitive trading strategy which is profitable long term and which 
 
 #### Exchanges
 
+`creten`supports two type of exchanges - offline ones (market data are stored locally) and online ones (market data fetched from the exchange via its API). Following table outlines all exchanges which are currently supported. It is expected that number of supported exchanges will grow with time.
+
+| Name | Type | Support | Description |
+| --- | --- | --- | --- | 
+| *File* | offline | full | Data are stored in a CSV file with the structure defined in the input configuration file
+| *Database* | offline | full | Data are stored in a database file with the structure defined in the input configuration file
+| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | online | full | 
+
+As you can see only binance online exchange is supported at the moment. binance is the biggest exchange according to the market cap and has complete API, which makes it a natural choice when deciding which exchange to support as a first one.
+
+All exchanges incorporated into `creten` are accessed via websockets if possible to guarantee that your account is not blocked due to high number of requests. This is one of the criteria when considering exchanges to be added into `creten` in the future.
+
+We are already working on adding other exchanges. Currently each exchange is implemented separately, our target is to utilise an external package (namely [ccxt](https://github.com/ccxt/ccxt)) which will provide a unified interface to vast variety of online exchanges. The reason why ccxt was not used from the begnning is its lack of full support of websockets.  
+
 #### Technical indicators
+
+`creten` provides many buil-in technical indicators. New indicators can be implemented easily or added from an external library. 
+
+| Type | Indicators |
+| :---: | --- |
+| **trend** | Average Direction Index (ADX) <br> Awesome Oscillator (AO) <br> Ichimoku Kinko Hyo <br> Know Sure Thing (KST) <br> Moving Average Convergence Divergence (MACD) <br> Mass Index <br> Moving Average (ALMA, SMA, SMMA, DEMA, EMA, HMA, TEMA, VWMA, WMA) <br> Parabolic SAR <br> SFX TOR
+| **support/resistance** | Pivot (Standard, Fibonnaci, Woodie, DeMark, Camarilla) <br> High/Low Pivots <br> Fibonnaci Retracements
+| **momentum** | Chaikin Oscillator <br> Rate of Change (ROC) <br> Relative strength index (RSI) <br> Stochastic Oscillator <br> Stochastic RSI <br> Ultimate oscillator
+| **volume** | Accumulation/Distribtuin (ADL) <br> On-balance Volume (OBV)
+| **volatility** | Average True Range (ATR) <br> Bollinger Bands (BB) <br> Donchian Channel (DC) <br> Keltner Channel (KC) <br> Standard deviation
 
 #### Order types
 
