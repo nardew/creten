@@ -10,5 +10,5 @@ if [ ! -d "$CRETEN_APP_ROOT_DIR" ]; then
     return 1
 fi
 
-echo "Adding \"${CRETEN_APP_ROOT_DIR}/creten\" into PYTHONPATH..."
+echo "Adding \"${CRETEN_APP_ROOT_DIR}\" into PYTHONPATH..."
 export PYTHONPATH="${CRETEN_APP_ROOT_DIR}:$PYTHONPATH"
