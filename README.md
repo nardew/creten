@@ -39,9 +39,9 @@ Devising a competitive trading strategy which is profitable long term and which 
 
 As you can see only binance online exchange is supported at the moment. binance is the biggest exchange according to the market cap and has complete API, which makes it a natural choice when deciding which exchange to support as a first one.
 
-All exchanges incorporated into `creten` are accessed via websockets if possible to guarantee that your account is not blocked due to high number of requests. This is one of the criteria when considering exchanges to be added into `creten` in the future.
+All exchanges incorporated into `creten` are accessed via websockets if possible to guarantee that your account is not blocked due to high number of requests. This is one of the criteria when considering new exchanges to be added into `creten` in the future.
 
-We are already working on adding other exchanges. Currently each exchange is implemented separately, our target is to utilise an external package (namely [ccxt](https://github.com/ccxt/ccxt)) which will provide a unified interface to vast variety of online exchanges. The reason why ccxt was not used from the begnning is its lack of full support of websockets.  
+Currently each exchange is implemented in `creten` separately but our target is to utilise an external package (namely [ccxt](https://github.com/ccxt/ccxt)) which will provide a unified interface to vast variety of online exchanges. The reason why ccxt was not used from the begnning is its lack of full support of websockets (see previous paragraph).  
 
 #### Technical indicators
 
@@ -70,9 +70,9 @@ buy/sell take profit limit order | similar to buy/sell stop loss limit order
 
 #### Trades vs. orders
 
-Most frameworks you find around view trades as a pair of orders where trade starts with a buy/sell order and ceases with the opposite order. This is perfectly fine for strategies where you repetitively buy and sell as a reaction to current market data. But what if your buying/selling approach is more sophisticated? What if you want to stack buying orders over time, for instance when market is evolving in your favour? Or what if you want to always place both a limit order and a stop loss at the same time and let either of the orders close the trade? What if you want to add several stop losses since you entered the trade? Many softwares with trades formed only of a pair of buy and sell orders will not provide this.
+Most frameworks you find around view trades as a pair of orders where trade starts with a buy/sell order and ceases with the opposite order. This is perfectly fine for strategies where you repetitively buy and sell as a reaction to current market data. But what if your buying/selling approach is more sophisticated? What if you want to stack buying orders over time, for instance when market is evolving in your favour? Or what if you want to always place both a limit order and a stop loss order at the same time and let either of the orders close the trade? What if you want to add new stop losses as your trade is evolving? Many trading packages with trades formed of only a pair of buy and sell orders will not allow this.
 
-`creten` was designed with above questions specifically in mind from the very beginning and its view of trades is more general. In fact, `creten` defines a trade as a set of orders of arbitrary number. Trade is initiated with the first order and closes when ceratin conditions are met (not necessarily when all orders are executed). To reuse previous example, imagine that your strategy is to first issue a buy market and a sell limit order together and then with each subsequent candle you place a new stop loss, e.g. using parabolic SAR. It means after 20 candles since the trade has been initiated your trade may be still active and will consit of 20 pending orders and you can continue adding additional orders of all types as you wish. The closing condition for this type of trade is that your (1) sell limit order or (2) stop loss order gets executed. When this happens, `creten` will automatically cancel the remaining pending orders since the trade is not active anymore.
+`creten` was specifically designed with above questions in mind from the very beginning and its view of trades is more general. In fact, `creten` defines a trade as a set of orders of arbitrary number. Trade is initiated with the first order and closes when ceratin conditions are met (not necessarily when all orders are executed). To reuse previous example, imagine that your strategy is to first issue together a buy market order and a sell limit order and then with each subsequent candle you place a new stop loss, e.g. using parabolic SAR. It means after 20 candles since the trade has been initiated your trade may still be active and will consit of 20 pending orders and you can continue adding additional orders of all types as you wish. The closing condition for this type of trade is that your (1) sell limit order or (2) stop loss order gets executed. When this happens, `creten` will automatically cancel the remaining pending orders since the trade is not active anymore.
 
 Being able to construct trades from many different orders and even update the set while trade is running gives developer a great opportunity to build his strategy without any limitation.
 
@@ -80,21 +80,34 @@ Being able to construct trades from many different orders and even update the se
 
 Every `creten`'s execution is recorded in the database, including details of execution itself, details of all trades, details of all orders and so on and so forth. In other words, database and data stored in it are crucial driving elements of `creten`.
 
-`creten` is using modern and powerful `SQLAlchemy` ORM framework to abstract interaction with database engine and therefore it is able to run with most of the standard databases seemlessly. Database engines which were successfully tested with `creten` (and hence are officially supported) and for which `creten` contains environment preperation scripts (see *Installation* section) include:
+`creten` is using powerful `SQLAlchemy` ORM framework to abstract interaction with database engine and therefore it is able to run with most of the standard databases seemlessly. Database engines which were successfully tested with `creten` (and hence are officially supported) and for which `creten` contains environment preperation scripts (see *Installation* section) are:
 - SQLite
 - MySQL
 - MariaDB
 - PostgreSQL
 
 Supporting a new database engine is straightfowawrd. It is required only to:
-- make sure that the database engine is supported by `SQLAlchemy` in the first place (which should not be a concern)
+- make sure that the database engine is supported by `SQLAlchemy` (which should not be a concern)
 - create a new environment preparation DDL script if none of the existing ones can be reused (due to some specificities of the given DDL)
 
 #### Performance evaluation
 
+Due to recording every bit of trading data in the database it is very easy to gather statistics of any kind and evaluate strategy's performance. At the end of backtesting `creten` automaticaly outputs performance parameters of the current run, for realtime testing or trading the parameters need to be retrieved from the database manually (SQL queries are provided with the package, see files in `db_queries/`).
+
+If you want to compare performance of different strategies and for some reason you are not willing to run SQL queries, you can use provided utility `utilities/crestat.py` which displays statistics of the last *X* runs of `creten` (where *X* can be chosen).
+
+Statistics shown after end of backtesting or retrieved via `crestat.py` include total number of trades, number of won trades, gross profit, gain/loss ratio, max and average gain, max and average loss, average trade duration, max trade duration and others.
+
 ## Limitations
 
-No trading, no shorting, few exchanges
+`creten` is a new project which means there will be technical issues hidden here and there. Although we tried to test the whole application thoroughly the smooth and bugfree execution will be ensured only after some time of public using and testing.
+
+Besides techincal issues there is clearly some functionality still missing. The main gaps as we see them are:
+- trading mode is currently disabled, only backtesting and realtime testing is enabled
+- only few (one) exchanges are supported at the moment
+- only long trades are supported (i.e. no shorting)
+
+All above gaps will be worked on based on the availability and priorities.
 
 ## Installation
 
