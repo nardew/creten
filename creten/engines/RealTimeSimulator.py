@@ -12,7 +12,7 @@ from market_data.PortfolioManager import PortfolioManager
 from orders.OrderManager import OrderManager
 from clients.BinanceSimulationDataListener import BinanceSimulationDataListener
 from market_data.CretenInterval import CretenInterval
-from strategy.StrategyExecutor import StrategyExecutor
+from strategy.StrategyManager import StrategyManager
 from market_data.Pair import Pair
 from json_schemas import RealtimetestSchema
 
@@ -54,16 +54,16 @@ class RealTimeSimulator(CretenEngine):
 			self.marketDataManager.init(pair, cretenInterval)
 			self.marketRulesManager.init(pair.getSymbol())
 
-			strategyExecutor = StrategyExecutor()
+			strategyManager = StrategyManager()
 
 			for strategyConf in inputConf['realtimetest']['strategies']:
 				strategy = StrategyFactory.getStrategy(strategyConf, pair, cretenExecDetlId,
 				                                       self.exchangeClient, self.marketDataManager,
 				                                       self.marketRulesManager, self.portfolioManager,
 				                                       self.orderManager)
-				strategyExecutor.addStrategy(strategy)
+				strategyManager.addStrategy(strategy)
 
-			self.exchangeDataListener.registerCandleListener(pair, cretenInterval, [self.exchangeEventSimulator.simulateEvent, strategyExecutor.execute])
+			self.exchangeDataListener.registerCandleListener(pair, cretenInterval, [self.exchangeEventSimulator.simulateEvent, strategyManager.execute])
 
 		self.portfolioManager.init()
 		self.exchangeDataListener.registerUserDataListener()

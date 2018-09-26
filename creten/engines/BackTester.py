@@ -10,7 +10,7 @@ from market_data.MarketRulesManager import MarketRulesManager
 from market_data.PortfolioManager import PortfolioManager
 from orders.OrderManager import OrderManager
 from market_data.CretenInterval import CretenInterval
-from strategy.StrategyExecutor import StrategyExecutor
+from strategy.StrategyManager import StrategyManager
 from market_data.Position import Position
 from engines.CretenEngine import CretenEngine
 from strategy.StrategyFactory import StrategyFactory
@@ -37,7 +37,8 @@ class BackTester(CretenEngine):
 		self.marketDataManager = MarketDataManager(self.exchangeClient)
 		self.marketRulesManager = MarketRulesManager(self.exchangeClient)
 		self.portfolioManager = PortfolioManager(self.exchangeClient)
-		self.orderManager = OrderManager(self.exchangeClient, self.marketRulesManager)
+		self.strategyManager = StrategyManager()
+		self.orderManager = OrderManager(self.exchangeClient, self.marketRulesManager, self.strategyManager)
 
 		self.exchangeDataListener = BacktestDataListener(self.exchangeClient, self.marketDataManager, self.marketRulesManager, self.portfolioManager, self.orderManager)
 		self.exchangeEventSimulator = ExchangeEventSimulator(self.marketDataManager, self.orderManager, self.portfolioManager, self.exchangeDataListener)
@@ -115,6 +116,7 @@ class BackTester(CretenEngine):
 				for pairConf in conf['pairs']:
 					pair = Pair(baseAsset = pairConf[0], quoteAsset = pairConf[1])
 
+					self.log.info('')
 					self.log.info('Loading market rules')
 					self.marketRulesManager.init([pair.getSymbol()])
 					self.log.info('Loading market rules completed')
@@ -125,8 +127,8 @@ class BackTester(CretenEngine):
 						                                       self.exchangeClient, self.marketDataManager,
 						                                       self.marketRulesManager, self.portfolioManager, self.orderManager)
 
-						strategyExecutor = StrategyExecutor()
-						strategyExecutor.addStrategy(strategy)
+						self.strategyManager.reset()
+						self.strategyManager.addStrategy(strategy)
 
 						startTimestamp = datetime.strptime(conf['start_tmstmp'], BACKTEST_TMSTMP_FORMAT)
 						endTimestamp = datetime.strptime(conf['end_tmstmp'], BACKTEST_TMSTMP_FORMAT)
@@ -147,7 +149,7 @@ class BackTester(CretenEngine):
 
 						interval = getattr(CretenInterval, "INTERVAL_" + conf['interval'])
 						self.exchangeDataListener.init(startTimestamp, endTimestamp)
-						self.exchangeDataListener.registerCandleListener(pair, interval, [self.exchangeEventSimulator.simulateEvent, strategyExecutor.execute])
+						self.exchangeDataListener.registerCandleListener(pair, interval, [self.exchangeEventSimulator.simulateEvent, self.strategyManager.execute])
 
 						self.exchangeDataListener.start()
 

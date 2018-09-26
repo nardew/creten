@@ -1,16 +1,19 @@
 from common.Logger import Logger
 
-class StrategyExecutor(object):
+class StrategyManager(object):
 	def __init__(self):
 		self.strategies = []
 
 		self.log = Logger()
 
+	def reset(self):
+		self.strategies = []
+
 	def addStrategy(self, strategy):
 		self.strategies.append(strategy)
 
-	def removeAllStrategies(self):
-		self.strategies = []
+	def getStrategies(self):
+		return self.strategies
 
 	def execute(self, candle):
 		self.log.debug('Processing candle: ' + str(candle))
