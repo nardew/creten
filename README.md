@@ -1,4 +1,6 @@
-# CRETEN
+![CRETEN](./logo_bw.png) CRETEN 
+====
+
 
 [![](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-2715/) [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/)
 
@@ -184,6 +186,317 @@ The easiest way to verify that `creten` was setup properly is to run one of the 
 After running either of the examples you should see `creten` to execute the selected trading strategy and display results at the end. If it is what happend, then congratulation, you are set to create and execute your own trading strategies.
   
 ## Usage
+
+Okay, you managed to install `creten` and execute of the examples successfuly. What does it take to create a new strategy from the scratch and backtest it? Keep on reading.  
+
+In the following paragraphs we are going to create a simple strategy based on the RSI indicator. The strategy will first wait until RSI gets oversold (its value decreases below 20) and then it will wait until it gets back over 50. At this point it files a buy market order for 1 BTC against USDT and a stop loss sell order at a price of say 80 USDT lower than the buy price. The strategy will file a sell market order as soon as RSI gets overbought above 80. This strategy will hardly make money consistently but it will serve for illustration of `creten`'s capabilities nicely. The strategy will be backtested on binance between 01/04/2018 and 31/08/2018 at 1 hour timeframe.
+
+In order to create and backtest a strategy, we need to:
+1. implement the strategy in Python code
+1. create an input JSON file with input configuration such as time window, timeframe and other parameters
+1. execute `creten` with above files
+
+First let's start with implementation of a blank strategy which will simply print candle properties of every incoming candle. Each `creten` strategy is represented by a Python class (let's call it `RSIStrategy`) inheriting from `CretenStrategy` class and implementing method `execute(...)`. In the simplest form, a valid strategy class looks like follows (ignore attributes in the constructor for the time being, they are mandatory but out of scope of this discussion):
+
+```python
+from strategy.CretenStrategy import CretenStrategy
+
+class RSIStrategy(CretenStrategy):
+    def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager, params):
+	super(RSIStrategy, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
+
+    def execute(self, candle):
+        print(candle)
+```
+
+If we backtest this strategy, we will simply see properties of all incoming candles. Let's save the strategy into `creten/strategy_repository/RSIStrategy.py`.
+
+Now on we go with preparation of the input configuration file. Each configuration file is a JSON file with minimal mandatory schema defined in `creten/json_schemas/BacktestSchema.py`. The structure is pretty selfexplanatory, for our example we will use following configuration:
+
+```python
+{
+    "backtest": [{
+        "strategies": [{
+            "strategy_name": "RSIStrategy",
+        }],
+        "pairs": [
+            ["BTC", "USDT"]
+        ],
+        "interval": "1HOUR",
+        "start_tmstmp": "20180401000000",
+        "end_tmstmp": "20180831000000",
+        "portfolio": [{
+            "asset": "USDT",
+            "quantity": 10000
+        }]
+    }]
+}
+```
+
+Above configuration says that we run a (single) backtest of our (single) RSIStrategy on data for (single) BTC/USDT pair between 01/04/2018 and 31/08/2018 at 1 hour timeframe. The reason why we say *single* is that those attributes are arrays and can be provided with multiple input data (multiple backtests on multiple strategies on multiple pairs). We save above configuration into `creten/rsi_input_config.json`.
+
+Before we execute our fresh strategy, we need to make sure that we setup database connection in `creten/common/client_settings.json` properly. Once done, execute `creten` as follows:
+
+`creten $ python creten.py -m backtest -e binance --apikey $APIKEY --seckey $SECKEY --inputconfig rsi_input_config.json`
+
+Ideally, you should see following output:
+
+```
+creten v0.1
+
+Time: 2018-09-26 23:11:06.606848
+Mode: backtest
+Exchange: binance
+Global log mode: info
+Db connection: mysql+pymysql://nardew@127.0.0.1:3306/creten
+Loading market rules
+Loading market rules completed
+
+Backtesting period: 2018-04-01 00:00:00 - 2018-08-31 00:00:00
+
+Initialize portfolio:
+	USDT: 0
+
+Loading historical data for symbol BTCUSDT
+Loading historical data completed
+
+Starting backtesting
+symbol BTCUSDT, interval 1HOUR, open time 2018-04-01 00:00:00, open 6923.02, high 6987.71, low 6889.71, close 6974.39, close time 2018-04-01 00:59:59.999000, closing True
+symbol BTCUSDT, interval 1HOUR, open time 2018-04-01 01:00:00, open 6962.91, high 6990.84, low 6888.53, close 6923.91, close time 2018-04-01 01:59:59.999000, closing True
+symbol BTCUSDT, interval 1HOUR, open time 2018-04-01 02:00:00, open 6922.0, high 7040.0, low 6922.0, close 6971.11, close time 2018-04-01 02:59:59.999000, closing True
+symbol BTCUSDT, interval 1HOUR, open time 2018-04-01 03:00:00, open 6980.01, high 7049.98, low 6968.26, close 7000.01, close time 2018-04-01 03:59:59.999000, closing True
+...
+symbol BTCUSDT, interval 1HOUR, open time 2018-08-30 22:00:00, open 6809.98, high 6945.02, low 6800.0, close 6916.01, close time 2018-08-30 22:59:59.999000, closing True
+symbol BTCUSDT, interval 1HOUR, open time 2018-08-30 23:00:00, open 6916.01, high 6960.79, low 6909.14, close 6940.98, close time 2018-08-30 23:59:59.999000, closing True
+symbol BTCUSDT, interval 1HOUR, open time 2018-08-31 00:00:00, open 6942.12, high 6955.99, low 6922.0, close 6943.12, close time 2018-08-31 00:59:59.999000, closing True
+
+Final balance for USDT: 0
+
+PERFORMANCE
++-----+--------+-----+------+---------+--------------+------+------+-----------+----------+----------+----------+----------+------------------+------------------+
+| SEI | Trades | Won | Lost | Won [%] | Gross profit | Gain | Loss | Gain/Loss | Avg gain | Max gain | Avg loss | Max loss | Avg trade length | Max trade length |
++-----+--------+-----+------+---------+--------------+------+------+-----------+----------+----------+----------+----------+------------------+------------------+
+| 1   |   0    |  0  |  0   |   None  |      0       | None | None |    None   |   None   |   None   |   None   |   None   |       None       |       None       |
++-----+--------+-----+------+---------+--------------+------+------+-----------+----------+----------+----------+----------+------------------+------------------+
+```
+
+As advertised, the strategy simply output properties of the processed candle.
+
+Now we can start tweaking our so-far-blank strategy. We will logically split the strategy into two parts - one part containing a code active when we are *not* in any trade (to test enter conditions of a trade) and another part containing a code active when we *are* in a trade (to test exit conditions of the trade). Our `execute` menthod will look like this:
+
+```python
+def execute(self, candle):        
+    # Check if we are already in a trade or not. If not, evaluate strategy's ENTRY conditions. If yes, evaluate
+    # strategy's EXIT conditions.
+    trades = self.getActiveTrades()		
+    if len(trades) == 0:
+        # we are not in any trade
+        pass	    
+    else:
+        # we are in a trade
+        pass
+``` 
+
+Recalling design of our strategy, we need at least an RSI indicator and a flag denoting if we entered the oversold region in order to enter a trade. In the following code we initialize RSI indicator, keep track of entering an oversold region and prepare entry and exit conditions of the trade.
+
+```python
+def __init__(self, ...):
+    super(RSIStrategy, self).__init__(...)
+
+    self.gotOversold = False
+
+def execute(self, candle):
+    # Fetch RSI indicators from the cache
+    rsi = self.marketDataManager.getIndicatorManager().getRSI(candle.getInterval(), candle.getSymbol(), 14)
+
+    # If RSI indicator does not contain at least 1 value, do not apply strategy at this point
+    if not minListLen([rsi], 1):
+        return
+
+    self.log.debug("RSI value: " + str(rsi[-1]))
+
+    # Check if we are already in a trade or not. If not, evaluate strategy's ENTRY conditions. If yes, evaluate
+    # strategies EXIT conditions.
+    trades = self.getActiveTrades()		
+    if len(trades) == 0:
+        # First check if we moved to the oversold region.
+        # If yes, record it in an auxaliary variable gotOversold.
+        if not self.gotOversold and rsi[-1] < 20:
+            self.gotOversold = True
+
+        # If we entered oversold region (gotOversold = True) and RSI returned back above specified limit,
+        # our ENTRY conditions are met and we file opening orders.
+        if self.gotOversold and rsi[-1] >= 50:
+            # a buy market order of 1 BTC
+            # a stoploss sell order at price lower by 80 compared to current price
+            pass
+    else:
+        # If we are in an active trade and RSI got into overbought region, we close the trade by a sell market order
+        if rsi[-1] > 80:
+            # a sell market order
+            pass
+            
+            # reset gotOversold flag
+            self.gotOversold = False
+```
+
+The skeleton and all decision points of our strategy are ready. The last missing piece is to fire buy and sell orders. Complete strategy is defined below:
+
+```python
+def __init__(self, ...):
+    super(RSIStrategy, self).__init__(...)
+
+    self.gotOversold = False
+
+def execute(self, candle):
+    # Fetch RSI indicators from the cache
+    rsi = self.marketDataManager.getIndicatorManager().getRSI(candle.getInterval(), candle.getSymbol(), 14)
+
+    # If RSI indicator does not contain at least 1 value, do not apply strategy at this point
+    if not minListLen([rsi], 1):
+        return
+
+    self.log.debug("RSI value: " + str(rsi[-1]))
+
+    # Check if we are already in a trade or not. If not, evaluate strategy's ENTRY conditions. If yes, evaluate
+    # strategies EXIT conditions.
+    trades = self.getActiveTrades()		
+    if len(trades) == 0:
+        # First check if we moved to the oversold region.
+        # If yes, record it in an auxaliary variable gotOversold.
+        if not self.gotOversold and rsi[-1] < 20:
+            self.gotOversold = True
+
+        # If we entered oversold region (gotOversold = True) and RSI returned back above specified limit,
+        # our ENTRY conditions are met and we file opening orders.
+        if self.gotOversold and rsi[-1] >= 50:
+            # a buy market order of 1 BTC
+            orderBuy = OrderBuyMarket(qty = 1)
+            # a stoploss sell order at price lower by 80 compared to current price
+            orderStopLoss = OrderSellStopLossLimit(qty = 1, stopPrice = candle.getClose() - 80, price = candle.getClose() - 80)
+
+            # initiate the trade with the two above orders
+            self.openTrade(TradeType.LONG, candle, [orderBuy, orderStopLoss])
+    else:
+        # If we are in an active trade and RSI got into overbought region, we close the trade by a sell market order
+        if rsi[-1] > 80:
+            # a sell market order
+            orderSell = OrderSellMarket(qty = 1)
+            self.openOrder(trades[-1], candle, [orderSell])
+            
+            # reset gotOversold flag
+            self.gotOversold = False
+```
+
+That's it. With minimum technical knowledge we were able to create a complete trading strategy (and on given input data even profitable one). If you run it with the previosly defined input configuration, you should see following output:
+
+```bash
+creten v0.1
+
+Time: 2018-09-26 23:38:40.416168
+Mode: backtest
+Exchange: binance
+Global log mode: info
+Db connection: mysql+pymysql://nardew@127.0.0.1:3306/creten
+Loading market rules
+Loading market rules completed
+
+Backtesting period: 2018-04-01 00:00:00 - 2018-08-31 00:00:00
+
+Initialize portfolio:
+	USDT: 0
+
+Loading historical data for symbol BTCUSDT
+Loading historical data completed
+
+Starting backtesting
+
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-05-29 13:00:00, open 7192.13, high 7483.78, low 7185.0, close 7405.61, close time 2018-05-29 13:59:59.999000, closing True]
+RSIStrategy: OPEN
+Order: orderSide BUY, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45622
+Order: orderSide SELL, orderType STOP_LOSS_LIMIT, qty 1.00000000, price 7325.60000000, stopPrice 7325.60000000, orderState OPEN_PENDING_INT, orderId 45623
+Trade 315193 OPENED.
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-05-30 17:00:00, open 7374.04, high 7382.0, low 7290.0, close 7324.81, close time 2018-05-30 17:59:59.999000, closing True]
+Filling stop loss order 45623
+Trade 315193 CLOSED.
+Gain: -80.01000000
+
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-06-18 18:00:00, open 6458.01, high 6687.87, low 6450.0, close 6644.95, close time 2018-06-18 18:59:59.999000, closing True]
+RSIStrategy: OPEN
+Order: orderSide BUY, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45624
+Order: orderSide SELL, orderType STOP_LOSS_LIMIT, qty 1.00000000, price 6564.94000000, stopPrice 6564.94000000, orderState OPEN_PENDING_INT, orderId 45625
+Trade 315194 OPENED.
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-06-20 03:00:00, open 6670.0, high 6677.65, low 6551.81, close 6618.99, close time 2018-06-20 03:59:59.999000, closing True]
+Filling stop loss order 45625
+Trade 315194 CLOSED.
+Gain: -80.01000000
+
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-06-25 13:00:00, open 6182.0, high 6238.0, low 6177.0, close 6232.82, close time 2018-06-25 13:59:59.999000, closing True]
+RSIStrategy: OPEN
+Order: orderSide BUY, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45626
+Order: orderSide SELL, orderType STOP_LOSS_LIMIT, qty 1.00000000, price 6152.81000000, stopPrice 6152.81000000, orderState OPEN_PENDING_INT, orderId 45627
+Trade 315195 OPENED.
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-06-25 14:00:00, open 6231.0, high 6274.77, low 6061.97, close 6110.0, close time 2018-06-25 14:59:59.999000, closing True]
+Filling stop loss order 45627
+Trade 315195 CLOSED.
+Gain: -80.01000000
+
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-06-30 00:00:00, open 5919.61, high 6300.0, low 5917.0, close 6243.38, close time 2018-06-30 00:59:59.999000, closing True]
+RSIStrategy: OPEN
+Order: orderSide BUY, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45628
+Order: orderSide SELL, orderType STOP_LOSS_LIMIT, qty 1.00000000, price 6163.38000000, stopPrice 6163.38000000, orderState OPEN_PENDING_INT, orderId 45629
+Trade 315196 OPENED.
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-07-02 17:00:00, open 6612.98, high 6649.97, low 6608.99, close 6630.08, close time 2018-07-02 17:59:59.999000, closing True]
+RSIStrategy: NEW ORDERS
+Order: orderSide SELL, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45630
+Trade 315196 CLOSED.
+Gain: 386.70000000
+
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-07-15 10:00:00, open 6282.63, high 6360.17, low 6281.17, close 6320.0, close time 2018-07-15 10:59:59.999000, closing True]
+RSIStrategy: OPEN
+Order: orderSide BUY, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45631
+Order: orderSide SELL, orderType STOP_LOSS_LIMIT, qty 1.00000000, price 6240.00000000, stopPrice 6240.00000000, orderState OPEN_PENDING_INT, orderId 45632
+Trade 315197 OPENED.
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-07-16 11:00:00, open 6380.49, high 6537.0, low 6375.3, close 6526.03, close time 2018-07-16 11:59:59.999000, closing True]
+RSIStrategy: NEW ORDERS
+Order: orderSide SELL, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45633
+Trade 315197 CLOSED.
+Gain: 206.03000000
+
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-08-11 19:00:00, open 6110.07, high 6488.0, low 6108.98, close 6439.0, close time 2018-08-11 19:59:59.999000, closing True]
+RSIStrategy: OPEN
+Order: orderSide BUY, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45634
+Order: orderSide SELL, orderType STOP_LOSS_LIMIT, qty 1.00000000, price 6359.00000000, stopPrice 6359.00000000, orderState OPEN_PENDING_INT, orderId 45635
+Trade 315198 OPENED.
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-08-11 21:00:00, open 6385.7, high 6395.84, low 6351.0, close 6387.85, close time 2018-08-11 21:59:59.999000, closing True]
+Filling stop loss order 45635
+Trade 315198 CLOSED.
+Gain: -80.00000000
+
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-08-15 04:00:00, open 6218.75, high 6295.0, low 6203.52, close 6256.95, close time 2018-08-15 04:59:59.999000, closing True]
+RSIStrategy: OPEN
+Order: orderSide BUY, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45636
+Order: orderSide SELL, orderType STOP_LOSS_LIMIT, qty 1.00000000, price 6176.94000000, stopPrice 6176.94000000, orderState OPEN_PENDING_INT, orderId 45637
+Trade 315199 OPENED.
+>>> [symbol BTCUSDT, interval 1HOUR, open time 2018-08-22 03:00:00, open 6461.04, high 6842.47, low 6448.87, close 6808.96, close time 2018-08-22 03:59:59.999000, closing True]
+RSIStrategy: NEW ORDERS
+Order: orderSide SELL, orderType MARKET, qty 1.00000000, price None, stopPrice None, orderState OPEN_PENDING_INT, orderId 45638
+Trade 315199 CLOSED.
+Gain: 552.01000000
+
+Final balance for USDT: 824.710000000001
+
+PERFORMANCE
++-----+--------+-----+------+---------+------------------+---------+--------+-----------+----------+----------+----------+----------+-------------------+------------------+
+| SEI | Trades | Won | Lost | Won [%] |   Gross profit   |   Gain  |  Loss  | Gain/Loss | Avg gain | Max gain | Avg loss | Max loss |  Avg trade length | Max trade length |
++-----+--------+-----+------+---------+------------------+---------+--------+-----------+----------+----------+----------+----------+-------------------+------------------+
+| 816 |   7    |  3  |  4   |  42.86  | 824.710000000001 | 1144.74 | 320.03 |    3.58   |  381.58  |  552.01  |  80.01   |  80.01   | 1 days 22h:17m:8s | 7 days 0h:0m:0s  |
++-----+--------+-----+------+---------+------------------+---------+--------+-----------+----------+----------+----------+----------+-------------------+------------------+
+```
+
+Overall our strategy entered 7 trades with 42% success rate and gross profit of 824.71 USDT.
+
+The complete strategy (with some tweaks) can be found in `creten/strategy_repository/RSIStrategy.py`, the input configuration and a wrapper script in `creten/examples/backtest/binance_rsi/`. In order to get feel of `creten` further, feel free to consult other examples in `creten/examples`.
 
 ## How can I help?
 

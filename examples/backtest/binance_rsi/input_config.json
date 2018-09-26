@@ -1,0 +1,30 @@
+{
+	"backtest": [
+		{
+			"strategies": [
+				{
+					"strategy_name": "RSIStrategy",
+					"params": {
+						"rsiPeriod": 14,
+						"rsiOversold": 20,
+						"rsiOverbought": 80,
+						"rsiSignal": 50,
+						"emaPeriod": 100
+					}
+				}
+			],
+			"pairs": [
+				["BTC", "USDT"]
+			],
+			"interval": "1HOUR",
+			"start_tmstmp": "20180401000000",
+			"end_tmstmp": "20180831000000",
+			"portfolio": [
+				{
+					"asset": "USDT",
+					"quantity": 0
+				}
+			]
+		}
+	]
+}
