@@ -12,7 +12,7 @@ from market_data.PortfolioManager import PortfolioManager
 from orders.OrderManager import OrderManager
 from clients.BinanceSimulationDataListener import BinanceSimulationDataListener
 from market_data.CretenInterval import CretenInterval
-from strategy.StrategyExecutor import StrategyExecutor
+from strategy.StrategyManager import StrategyManager, StrategyExecutor
 from market_data.Pair import Pair
 from json_schemas import RealtimetestSchema
 
@@ -27,13 +27,14 @@ class RealTimeSimulator(CretenEngine):
 		self.marketDataManager = MarketDataManager(self.exchangeClient)
 		self.marketRulesManager = MarketRulesManager(self.exchangeClient)
 		self.portfolioManager = PortfolioManager(self.exchangeClient)
-		self.orderManager = OrderManager(self.exchangeClient, self.marketRulesManager)
+		self.strategyManager = StrategyManager()
+		self.orderManager = OrderManager(self.exchangeClient, self.marketRulesManager, self.strategyManager)
 
 		self.exchangeDataListener = BinanceSimulationDataListener(self.exchangeClient, self.marketDataManager, self.marketRulesManager, self.portfolioManager, self.orderManager)
 		self.exchangeEventSimulator = ExchangeEventSimulator(self.marketDataManager, self.orderManager, self.portfolioManager, self.exchangeDataListener)
 
 	def run(self):
-		self.log.info('');
+		self.log.info('')
 		self.log.info('Starting real time simulation')
 
 		inputConf = json.loads(self.inputConfRaw)
@@ -55,6 +56,7 @@ class RealTimeSimulator(CretenEngine):
 			self.marketRulesManager.init(pair.getSymbol())
 
 			strategyExecutor = StrategyExecutor()
+			self.strategyManager.addStrategyExecutor(strategyExecutor)
 
 			for strategyConf in inputConf['realtimetest']['strategies']:
 				strategy = StrategyFactory.getStrategy(strategyConf, pair, cretenExecDetlId,
