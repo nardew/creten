@@ -5,6 +5,9 @@ from orders.OrderSellStopLossLimit import OrderSellStopLossLimit
 from orders.TradeType import TradeType
 from common.ListOperations import minListLen
 
+# Trading strategy based on RSI and EMA indicators:
+# ENTRY: RSI got oversold -> returned back above limit + price above EMA
+# EXIT: price below (entry price - constant) or RSI got overbought
 class RSIStrategy(CretenStrategy):
 	def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager, params):
 		super(RSIStrategy, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)

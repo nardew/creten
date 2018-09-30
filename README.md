@@ -248,7 +248,7 @@ Time: 2018-09-26 23:11:06.606848
 Mode: backtest
 Exchange: binance
 Global log mode: info
-Db connection: mysql+pymysql://nardew@127.0.0.1:3306/creten
+Db connection: mysql+pymysql://creten@127.0.0.1:3306/creten
 Loading market rules
 Loading market rules completed
 
@@ -397,7 +397,7 @@ Time: 2018-09-26 23:38:40.416168
 Mode: backtest
 Exchange: binance
 Global log mode: info
-Db connection: mysql+pymysql://nardew@127.0.0.1:3306/creten
+Db connection: mysql+pymysql://creten@127.0.0.1:3306/creten
 Loading market rules
 Loading market rules completed
 
