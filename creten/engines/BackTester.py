@@ -10,7 +10,7 @@ from market_data.MarketRulesManager import MarketRulesManager
 from market_data.PortfolioManager import PortfolioManager
 from orders.OrderManager import OrderManager
 from market_data.CretenInterval import CretenInterval
-from strategy.StrategyManager import StrategyManager
+from strategy.StrategyManager import StrategyManager, StrategyExecutor
 from market_data.Position import Position
 from engines.CretenEngine import CretenEngine
 from strategy.StrategyFactory import StrategyFactory
@@ -128,7 +128,9 @@ class BackTester(CretenEngine):
 						                                       self.marketRulesManager, self.portfolioManager, self.orderManager)
 
 						self.strategyManager.reset()
-						self.strategyManager.addStrategy(strategy)
+						strategyExecutor = StrategyExecutor()
+						strategyExecutor.addStrategy(strategy)
+						self.strategyManager.addStrategyExecutor(strategyExecutor)
 
 						startTimestamp = datetime.strptime(conf['start_tmstmp'], BACKTEST_TMSTMP_FORMAT)
 						endTimestamp = datetime.strptime(conf['end_tmstmp'], BACKTEST_TMSTMP_FORMAT)
@@ -149,7 +151,7 @@ class BackTester(CretenEngine):
 
 						interval = getattr(CretenInterval, "INTERVAL_" + conf['interval'])
 						self.exchangeDataListener.init(startTimestamp, endTimestamp)
-						self.exchangeDataListener.registerCandleListener(pair, interval, [self.exchangeEventSimulator.simulateEvent, self.strategyManager.execute])
+						self.exchangeDataListener.registerCandleListener(pair, interval, [self.exchangeEventSimulator.simulateEvent, strategyExecutor.execute])
 
 						self.exchangeDataListener.start()
 
