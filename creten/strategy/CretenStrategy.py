@@ -33,6 +33,9 @@ class CretenStrategy:
 	def persistStrategyParams(self, tradeId):
 		pass
 
+	def tradeClosed(self, tradeId):
+		self.log.info(self.__class__.__name__ + ': trade ' + str(tradeId) + ' closed')
+
 	def getActiveTrades(self, pair = None):
 		if not pair:
 			pair = self.pair

@@ -17,9 +17,10 @@ from orders.Order import Order
 import orders.Trade
 
 class OrderManager(object):
-	def __init__(self, exchangeClient, marketRulesManager):
+	def __init__(self, exchangeClient, marketRulesManager, strategyManager):
 		self.exchangeClient = exchangeClient
 		self.marketRulesManager = marketRulesManager
+		self.strategyManager = strategyManager
 
 		self.shapeNewOrders = True
 		self.validateOrders = True
@@ -86,6 +87,11 @@ class OrderManager(object):
 		self.log.info('Trade ' + str(trade.trade_id) + ' CLOSED.')
 		trade.trade_state = TradeStateMapper.getDbValue(TradeState.CLOSED)
 		trade.close_tmstmp = closeTmstmp
+
+		# notify strategy about the closed trade
+		for strategy in self.strategyManager.getStrategies():
+			if strategy.getStrategyExecId() == trade.strategy_exec_id:
+				strategy.tradeClosed(trade.trade_id)
 
 		self._calcTradePerf(trade)
 
