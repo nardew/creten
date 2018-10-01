@@ -4,9 +4,9 @@ from orders.OrderSellMarket import OrderSellMarket
 from orders.TradeType import TradeType
 from common.ListOperations import minListLen
 
-# Trading strategy based on moving averages and their crossing:
-# ENTRY: fast moving average gets above slow moving average
-# EXIT: fast moving average gets below slow moving average
+# Trading strategy based on MACD and AO:
+# ENTRY: MACD line gets over signal len and AO gets positive
+# EXIT: MACD line gets below signal len and AO gets negative
 class MACD_AOStrategy(CretenStrategy):
 	def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager, params):
 		super(MACD_AOStrategy, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
