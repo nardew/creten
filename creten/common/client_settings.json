@@ -4,7 +4,7 @@
 		"HOST": "127.0.0.1",
 		"PORT": 3306,
 		"DB": "creten",
-		"USER": "nardew",
-		"PASSWORD": "nardew"
+		"USER": "creten",
+		"PASSWORD": "creten"
 	}
 }

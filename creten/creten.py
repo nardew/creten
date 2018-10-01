@@ -5,7 +5,7 @@ import datetime
 from colorama import Fore, Back, Style
 import re
 from common.Db import Db
-from common.constants import PARAM_MODE_BACKTEST, PARAM_MODE_TRADING, PARAM_MODE_REALTIMETEST, PARAM_EXCHANGE_BINANCE, PARAM_EXCHANGE_FILE, DEFAULT_CLIENT_SETTINGS_PATH
+from common.constants import PARAM_MODE_BACKTEST, PARAM_MODE_TRADING, PARAM_MODE_REALTIMETEST, PARAM_EXCHANGE_BINANCE, PARAM_EXCHANGE_FILE, PARAM_EXCHANGE_DB, DEFAULT_CLIENT_SETTINGS_PATH
 from clients.ExchangeClientFactory import ExchangeClientFactory
 from common.Logger import Logger
 from common.Settings import Settings
@@ -49,7 +49,7 @@ def parseArgs():
 	parser = argparse.ArgumentParser(description='CRETEN - Crypto Exchange Trading Engine')
 	parser.add_argument('-m', '--mode', choices=[PARAM_MODE_TRADING, PARAM_MODE_REALTIMETEST, PARAM_MODE_BACKTEST], help='Mode in which creten will be running',
 	                    required=True)
-	parser.add_argument('-e', '--exchange', choices=[PARAM_EXCHANGE_BINANCE, PARAM_EXCHANGE_FILE], help='Exchange to connect to', required = True)
+	parser.add_argument('-e', '--exchange', choices=[PARAM_EXCHANGE_BINANCE, PARAM_EXCHANGE_FILE, PARAM_EXCHANGE_DB], help='Exchange to connect to', required = True)
 	parser.add_argument('--inputconfig', help = 'Input configuration file for the execution', required = True)
 	parser.add_argument('--exchangeconfig', help = 'Custom configuration of the selected exchange', required = False)
 	parser.add_argument('--clientconfig', help = 'Path to a file with client settings', default = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_CLIENT_SETTINGS_PATH), required = False)

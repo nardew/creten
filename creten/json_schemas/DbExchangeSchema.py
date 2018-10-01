@@ -66,37 +66,38 @@ schema = {
 			"$comment": "Section describing the input price data.",
 			"type": "object",
 			"properties": {
-				"inputFile": {
-					"$comment": "Path to the CSV file with input data.",
-					"type": "string"
-				},
-				"separator": {
-					"$comment": "Separator that will be used to separate CSV attributes.",
-					"type": "string",
-					"minLength": 1,
-					"maxLength": 1
+				"db": {
+					"$comment": "Db description with the input data",
+					"type": "object",
+					"properties": {
+						"tableName": {
+							"$comment": "Name of the table containing input data",
+							"type": "string"
+						}
+					},
+					"required": ["tableName"]
 				},
 				"fieldMap": {
 					"$comment": "Specifies structure of the input CSV file. For each of the below attributes it maps corresponding column in the CSV file (starting from 0). Each attribute should be assigned a unique number (though it is not enforced by the application).",
 					"type": "object",
 					"properties": {
 						"openTmstmp": {
-							"$ref" : "#/definitions/fieldIndexNumber"
+							"type": "string"
 						},
 						"open": {
-							"$ref" : "#/definitions/fieldIndexNumber"
+							"type": "string"
 						},
 						"high": {
-							"$ref" : "#/definitions/fieldIndexNumber"
+							"type": "string"
 						},
 						"low": {
-							"$ref" : "#/definitions/fieldIndexNumber"
+							"type": "string"
 						},
 						"close": {
-							"$ref" : "#/definitions/fieldIndexNumber"
+							"type": "string"
 						},
 						"volume": {
-							"$ref" : "#/definitions/fieldIndexNumber"
+							"type": "string"
 						},
 					},
 					"required": ["openTmstmp", "open", "high", "low", "close", "volume"]
@@ -127,7 +128,7 @@ schema = {
 					]
 				},
 			},
-			"required": ["inputFile", "separator", "fieldMap", "timeFormat", "interval"]
+			"required": ["db", "fieldMap", "timeFormat", "interval"]
 		}
 	},
 
@@ -137,11 +138,6 @@ schema = {
         "stringNumber": {
 	        "type": "string",
 			"pattern": "^[0-9]+\.?[0-9]*$"
-        },
-		"fieldIndexNumber": {
-			"type": "number",
-			"multipleOf": 1,
-			"minimum": 0
-		}
+        }
     },
 }

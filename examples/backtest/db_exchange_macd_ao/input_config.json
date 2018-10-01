@@ -1,0 +1,30 @@
+{
+	"backtest": [
+		{
+			"strategies": [
+				{
+					"strategy_name": "MACD_AOStrategy",
+					"params": {
+						"macdFastMa": 12,
+						"macdSlowMa": 26,
+						"macdSignal": 9,
+						"aoFastMa": 5,
+						"aoSlowMa": 34
+					}
+				}
+			],
+			"pairs": [
+				["BTC", "USDT"]
+			],
+			"interval": "1DAY",
+			"start_tmstmp": "20090901000000",
+			"end_tmstmp": "20180801000000",
+			"portfolio": [
+				{
+					"asset": "USDT",
+					"quantity": 0
+				}
+			]
+		}
+	]
+}
