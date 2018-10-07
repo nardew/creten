@@ -4,11 +4,8 @@ from indicators.PivotsHL import HL
 from indicators.SAR import SARValue
 
 class IndicatorMonitor(CretenStrategy):
-	def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager,
-	             params):
-		super(IndicatorMonitor, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
-
-		self.params = params
+	def __init__(self, cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager):
+		super(IndicatorMonitor, self).__init__(cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
 
 	@staticmethod
 	def getIfExists(array, index):

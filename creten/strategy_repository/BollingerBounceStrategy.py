@@ -7,13 +7,10 @@ from common.ListOperations import minListLen
 
 # Trading strategy based on bollinger bands
 # ENTRY: 1/ price got below lower bollinger band, 2/ then got back above the central line, 3/ central line is increasing
-# EXIT: proce got above upper bollinger band
+# EXIT: price got above upper bollinger band
 class BollingerBounceStrategy(CretenStrategy):
-	def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager, params):
-		super(BollingerBounceStrategy, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
-
-		self.params = params
-
+	def __init__(self, cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager):
+		super(BollingerBounceStrategy, self).__init__(cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
 		self.lowerCross = False
 
 	def tradeClosed(self, tradeId):
@@ -49,4 +46,4 @@ class BollingerBounceStrategy(CretenStrategy):
 			# if we got above upper bollinger band, then sell
 			if candle.getClose() > bb.getUpperBand()[-1]:
 				o1 = OrderSellMarket(qty = 1)
-				self.openOrder(trades[0], candle, [o1])
+				self.updateTrade(trades[0], candle, [o1])

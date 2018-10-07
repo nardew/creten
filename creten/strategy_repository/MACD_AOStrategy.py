@@ -5,13 +5,11 @@ from orders.TradeType import TradeType
 from common.ListOperations import minListLen
 
 # Trading strategy based on MACD and AO:
-# ENTRY: MACD line gets over signal len and AO gets positive
-# EXIT: MACD line gets below signal len and AO gets negative
+# ENTRY: MACD line gets over signal line and AO gets positive
+# EXIT: MACD line gets below signal line and AO gets negative
 class MACD_AOStrategy(CretenStrategy):
-	def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager, params):
-		super(MACD_AOStrategy, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
-
-		self.params = params
+	def __init__(self, cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager):
+		super(MACD_AOStrategy, self).__init__(cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
 
 		self.macdBullCross = False
 		self.macdBearCross = False
@@ -57,4 +55,4 @@ class MACD_AOStrategy(CretenStrategy):
 			# if macd is below signal line (bearish crossing) and ao is negative, then sell
 			if self.macdBearCross and ao[-1] <= 0:
 				o = OrderSellMarket(qty = 100)
-				self.openOrder(trades[-1], candle, [o])
+				self.updateTrade(trades[-1], candle, [o])

@@ -3,8 +3,9 @@ from orders.OrderType import OrderType
 from orders.OrderState import OrderState
 from orders.TradeType import TradeType
 from orders.TradeState import TradeState
+from orders.TradeCloseType import TradeCloseType
 from market_data.CretenInterval import CretenInterval
-from db_entities.db_codes import REF_ORDER_TYPE, REF_TRADE_TYPE, REF_ORDER_SIDE, REF_TRADE_STATE, REF_ORDER_STATE, REF_INTERVAL
+from db_entities.db_codes import REF_ORDER_TYPE, REF_TRADE_TYPE, REF_ORDER_SIDE, REF_TRADE_STATE, REF_ORDER_STATE, REF_INTERVAL, REF_TRADE_CLOSE_TYPE
 
 class DbCodeMapper:
 	@classmethod
@@ -55,7 +56,9 @@ class OrderTypeMapper(DbCodeMapper):
 		OrderType.MARKET: REF_ORDER_TYPE.MARKET,
 		OrderType.LIMIT: REF_ORDER_TYPE.LIMIT,
 		OrderType.STOP_LOSS_LIMIT: REF_ORDER_TYPE.STOP_LOSS_LIMIT,
-		OrderType.STOP_LOSS_MARKET: REF_ORDER_TYPE.STOP_LOSS_MARKET
+		OrderType.STOP_LOSS_MARKET: REF_ORDER_TYPE.STOP_LOSS_MARKET,
+		OrderType.TAKE_PROFIT_LIMIT: REF_ORDER_TYPE.TAKE_PROFIT_LIMIT,
+		OrderType.TAKE_PROFIT_MARKET: REF_ORDER_TYPE.TAKE_PROFIT_MARKET
 	}
 
 class OrderStateMapper(DbCodeMapper):
@@ -87,4 +90,10 @@ class TradeStateMapper(DbCodeMapper):
 		TradeState.CLOSE_PENDING: REF_TRADE_STATE.CLOSE_PENDING,
 		TradeState.CLOSE_FAILED: REF_TRADE_STATE.CLOSE_FAILED,
 		TradeState.CLOSED: REF_TRADE_STATE.CLOSED
+	}
+
+class TradeCloseTypeMapper(DbCodeMapper):
+	mapping = {
+		TradeCloseType.ORDER_DRIVEN: REF_TRADE_CLOSE_TYPE.ORDER_DRIVEN,
+		TradeCloseType.QUANTITY_DRIVEN: REF_TRADE_CLOSE_TYPE.QUANTITY_DRIVEN
 	}

@@ -33,7 +33,33 @@ schema = {
 					"type": "string"
 				}
 			}
+		},
+
+		"TRADES": {
+			"$comment": "Default trade parameters",
+			"type": "object",
+			"properties": {
+				"DEFAULT_TRADE_CLOSE_TYPE": {
+					"$comment": "Default strategy deciding when trade is marked as closed.",
+					"type": "string",
+					"enum": [
+						"ORDER_DRIVEN",
+						"QUANTITY_DRIVEN"
+					]
+				},
+				"DEFAULT_MAX_PARALLEL_TRADES": {
+					"$comment": "Maximum number of trades created by one strategy that can be active at the same time.",
+					"type": "number",
+					"minimum": 1
+				},
+				"DEFAULT_PARALLEL_TRADES_MIN_DIST": {
+					"$comment": "If more than one trade can be active, define the minimum distance of the next active trade.",
+					"type": "number",
+					"minimum": 1
+				}
+			},
+			"required": ["DEFAULT_TRADE_CLOSE_TYPE", "DEFAULT_MAX_PARALLEL_TRADES", "DEFAULT_PARALLEL_TRADES_MIN_DIST"]
 		}
 	},
-	"required": ["DB_CONNECTION"]
+	"required": ["DB_CONNECTION", "TRADES"]
 }

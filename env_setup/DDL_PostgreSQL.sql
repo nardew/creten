@@ -50,7 +50,8 @@ CREATE TABLE "strategy_exec" (
   "conf" text NOT NULL,
   "dscp" text,
   "base_asset" varchar(4) NOT NULL,
-  "quote_asset" varchar(4) NOT NULL
+  "quote_asset" varchar(4) NOT NULL,
+  "trade_close_type" varchar(64) NOT NULL
 );
 DROP INDEX IF EXISTS "idx_strategy_exec_creten_exec_detl_id";
 CREATE INDEX "idx_strategy_exec_creten_exec_detl_id" on "strategy_exec" ("creten_exec_detl_id");

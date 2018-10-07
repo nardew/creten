@@ -58,5 +58,7 @@ class BinanceOrderTypeMapper(BinanceDataMapper):
 		"MARKET": OrderType.MARKET,
 		"LIMIT": OrderType.LIMIT,
 		"STOP_LOSS_LIMIT": OrderType.STOP_LOSS_LIMIT,
-		"STOP_LOSS": OrderType.STOP_LOSS_MARKET
+		"STOP_LOSS": OrderType.STOP_LOSS_MARKET,
+		"TAKE_PROFIT_LIMIT": OrderType.TAKE_PROFIT_LIMIT,
+		"TAKE_PROFIT": OrderType.TAKE_PROFIT_MARKET
 	}

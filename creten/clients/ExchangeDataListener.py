@@ -100,7 +100,7 @@ class ExchangeDataListener:
 
 			try:
 				# 4. create outbound orders
-				self.orderManager.sentOrders(self.cretenExecDetlId)
+				self.orderManager.sendOrders(self.cretenExecDetlId)
 				Db.Session().commit()
 			except:
 				self.log.error('Candle processing failed while generating outbound orders! Msg [' + str(msg) + ']')
@@ -137,7 +137,7 @@ class ExchangeDataListener:
 
 			try:
 				# create outbound orders
-				self.orderManager.sentOrders(self.cretenExecDetlId)
+				self.orderManager.sendOrders(self.cretenExecDetlId)
 				Db.Session().commit()
 			except:
 				self.log.error('Order update processing failed while generating outbound orders! Msg [' + str(msg) + ']')

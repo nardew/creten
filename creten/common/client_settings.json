@@ -6,5 +6,11 @@
 		"DB": "creten",
 		"USER": "creten",
 		"PASSWORD": "creten"
+	},
+
+	"TRADES": {
+		"DEFAULT_TRADE_CLOSE_TYPE": "ORDER_DRIVEN",
+		"DEFAULT_MAX_PARALLEL_TRADES": 1,
+		"DEFAULT_PARALLEL_TRADES_MIN_DIST": 10
 	}
 }

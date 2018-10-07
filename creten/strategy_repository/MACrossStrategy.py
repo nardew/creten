@@ -8,10 +8,8 @@ from common.ListOperations import minListLen
 # ENTRY: fast moving average gets above slow moving average
 # EXIT: fast moving average gets below slow moving average
 class MACrossStrategy(CretenStrategy):
-	def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager, params):
-		super(MACrossStrategy, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
-
-		self.params = params
+	def __init__(self, cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager):
+		super(MACrossStrategy, self).__init__(cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
 
 	def execute(self, candle):
 		self.log.debug(self.__class__.__name__)
@@ -39,4 +37,4 @@ class MACrossStrategy(CretenStrategy):
 			# fast EMA got below slow EMA -> sell
 			if emaF[-1] < emaS[-1] and emaF[-2] > emaS[-2]:
 				o = OrderSellMarket(qty = 10)
-				self.openOrder(trades[-1], candle, [o])
+				self.updateTrade(trades[-1], candle, [o])

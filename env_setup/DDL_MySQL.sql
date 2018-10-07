@@ -54,6 +54,7 @@ CREATE TABLE `strategy_exec` (
   `dscp` text,
   `base_asset` varchar(4) NOT NULL,
   `quote_asset` varchar(4) NOT NULL,
+  `trade_close_type` varchar(64) NOT NULL,
   PRIMARY KEY (`strategy_exec_id`),
   KEY `idx_strategy_exec_creten_exec_detl_id` (`creten_exec_detl_id`)
 );

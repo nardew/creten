@@ -31,6 +31,11 @@ class StrategyManager(object):
 	def addStrategyExecutor(self, strategyExecutor):
 		self.strategyExecutors.append(strategyExecutor)
 
+	def getStrategy(self, strategyExecId):
+		for strategy in self.getStrategies():
+			if strategy.getStrategyExecId() == strategyExecId:
+				return strategy
+
 	def getStrategies(self):
 		for se in self.strategyExecutors:
 			for s in se.getStrategies():

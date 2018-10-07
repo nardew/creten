@@ -59,12 +59,13 @@ class ExecManager():
 		return ced
 
 	@staticmethod
-	def createStrategyExec(cretenExecDetlId, strategyConf, pair):
+	def createStrategyExec(cretenExecDetlId, strategyConf, tradeCloseType, pair):
 		se = StrategyExec()
 		se.creten_exec_detl_id = cretenExecDetlId
 		se.base_asset = pair.getBaseAsset()
 		se.quote_asset = pair.getQuoteAsset()
 		se.conf = json.dumps(strategyConf)
+		se.trade_close_type = tradeCloseType
 
 		try:
 			se.dscp = strategyConf['dscp']

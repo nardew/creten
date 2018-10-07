@@ -9,10 +9,8 @@ from common.ListOperations import minListLen
 # ENTRY: RSI got oversold -> returned back above limit + price above EMA
 # EXIT: price below (entry price - constant) or RSI got overbought
 class RSIStrategy(CretenStrategy):
-	def __init__(self, strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager, params):
-		super(RSIStrategy, self).__init__(strategyExecId, pair, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
-
-		self.params = params
+	def __init__(self, cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager):
+		super(RSIStrategy, self).__init__(cretenExecDetlId, pair, strategyConf, exchangeClient, marketDataManager, marketRulesManager, portfolioManager, orderManager)
 
 		self.gotOversold = False
 
@@ -60,7 +58,7 @@ class RSIStrategy(CretenStrategy):
 			# If we are in an active trade and RSI got into overbought region, we close the trade by a sell market order
 			if rsi[-1] > self.params['rsiOverbought']:
 				orderSell = OrderSellMarket(qty = 1)
-				self.openOrder(trades[-1], candle, [orderSell])
+				self.updateTrade(trades[-1], candle, [orderSell])
 
 				# reset gotOversold flag
 				self.gotOversold = False
