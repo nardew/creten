@@ -11,3 +11,4 @@ class OrderState:
 	CANCELED = 10
 	REJECTED = 11
 	EXPIRED = 12
+	SL_TP_ACTIVATED = 13

@@ -66,7 +66,7 @@ class OrderManager(object):
 		o.setFromEntity(order)
 		self.liveOrderCache[order.order_id] = o
 
-	def _storeTrade(self, trade):
+	def storeTrade(self, trade):
 		Db.Session().add(trade)
 
 		# flush in order to generate db maintained sequence
@@ -157,7 +157,7 @@ class OrderManager(object):
 			raise Exception('Short trades not supported!')
 
 		self.storeOrder(order)
-		self._storeTrade(trade)
+		self.storeTrade(trade)
 
 	def _validateOrders(self, baseAsset, quoteAsset, orders):
 		rules = self.marketRulesManager.getSymbolRules(baseAsset, quoteAsset)
@@ -254,7 +254,7 @@ class OrderManager(object):
 		trade.trade_state = TradeStateMapper.getDbValue(TradeState.OPEN_PENDING)
 		trade.trade_type = TradeTypeMapper.getDbValue(tradeType)
 
-		self._storeTrade(trade)
+		self.storeTrade(trade)
 
 		return trade
 

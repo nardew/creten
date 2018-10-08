@@ -67,14 +67,17 @@ class ExchangeEventSimulator(object):
 			primaryPrio = 10
 			secondaryPrio = order.getPrice()
 		else:
-			raise Exception("Unknown order type for order id " + str(order.getOrderId()))
+			raise Exception("Unknown order type for order id [" + str(order.getOrderId()) + "], order type [" + str(order.getOrderType()) + "]")
 
 		return primaryPrio, secondaryPrio
 
 	def simulateEvent(self, candle):
 		# Simulate events as long as there is a trade pending confirmation (opening, cancellation, ...). Several iterations
 		# might be required since in some cases new pending orders are produced within previous iteration
-		while True:
+		requestSimulationLoop = True
+		while requestSimulationLoop:
+			requestSimulationLoop = False
+
 			# Trade order cache has to be iterated via keys since its content may change on the fly (e.g. a filled trade can
 			# lead to cancellation of pending trades). Furthermore, the keys are ordered by priority (for more details
 			# see comparator description)
@@ -116,8 +119,8 @@ class ExchangeEventSimulator(object):
 					self.exchangeDataListener.processOrderUpdate(response)
 
 				# evaluate market orders
-				if order.getOrderState() == OrderState.OPENED and \
-						order.getOrderType() == OrderType.MARKET:
+				if (order.getOrderType() == OrderType.MARKET and order.getOrderState() == OrderState.OPENED) or \
+					(order.getOrderType() in [OrderType.STOP_LOSS_MARKET, OrderType.TAKE_PROFIT_MARKET] and order.getOrderState() == OrderState.SL_TP_ACTIVATED):
 					self.log.debug('>>> [' + str(candle) + ']')
 					self.log.debug('Filling market order ' + str(order.getOrderId()))
 					response = OrderResponse(baseAsset = trade.getBaseAsset(), quoteAsset = trade.getQuoteAsset(),
@@ -132,12 +135,14 @@ class ExchangeEventSimulator(object):
 					self._updatePosition(response)
 
 				# evaluate limit orders
-				if order.getOrderState() == OrderState.OPENED and \
-						order.getOrderType() == OrderType.LIMIT and \
-						(
-							(order.getOrderSide() == OrderSide.SELL and candle.getClose() >= order.getPrice()) or
-							(order.getOrderSide() == OrderSide.BUY and candle.getClose() <= order.getPrice())
-						):
+				if (
+						(order.getOrderType() == OrderType.LIMIT and order.getOrderState() == OrderState.OPENED) or
+				        (order.getOrderType() in [OrderType.STOP_LOSS_LIMIT, OrderType.STOP_LOSS_MARKET] and order.getOrderState() == OrderState.SL_TP_ACTIVATED)
+					) and \
+					(
+						(order.getOrderSide() == OrderSide.SELL and candle.getUpperBody() >= order.getPrice()) or
+						(order.getOrderSide() == OrderSide.BUY and candle.getLowerBody() <= order.getPrice())
+					):
 					self.log.info('>>> [' + str(candle) + ']')
 					self.log.info('Filling limit order ' + str(order.getOrderId()))
 					response = OrderResponse(baseAsset = trade.getBaseAsset(), quoteAsset = trade.getQuoteAsset(),
@@ -151,52 +156,37 @@ class ExchangeEventSimulator(object):
 
 					self._updatePosition(response)
 
-				# evaluate stop loss market/limit orders
+				# evaluate stop loss market/limit activation
 				if order.getOrderState() == OrderState.OPENED and \
 						order.getOrderType() in [OrderType.STOP_LOSS_LIMIT, OrderType.STOP_LOSS_MARKET] and \
 						(
-							(order.getOrderSide() == OrderSide.SELL and candle.getLow() <= order.getStopPrice()) or
-							(order.getOrderSide() == OrderSide.BUY and candle.getHigh() >= order.getStopPrice())
+								(order.getOrderSide() == OrderSide.SELL and candle.getLow() <= order.getStopPrice()) or
+								(order.getOrderSide() == OrderSide.BUY and candle.getHigh() >= order.getStopPrice())
 						):
 					self.log.info('>>> [' + str(candle) + ']')
-					self.log.info('Filling stop loss order ' + str(order.getOrderId()))
-					response = OrderResponse(baseAsset = trade.getBaseAsset(), quoteAsset = trade.getQuoteAsset(),
-					                         orderSide = order.getOrderSide(),
-					                         orderType = order.getOrderType(),
-					                         origQty = order.getQty(), lastExecutedQty = order.getQty(),
-					                         sumExecutedQty = order.getQty(),
-					                         price = order.getPrice(),
-					                         orderState = OrderState.FILLED, orderTmstmp = candle.getCloseTime(),
-					                         clientOrderId = order.getIntOrderRef(), extOrderRef = order.getIntOrderRef())
+					self.log.info('Activating stop loss order ' + str(order.getOrderId()))
+					response = OrderResponse(orderState = OrderState.SL_TP_ACTIVATED, clientOrderId = order.getIntOrderRef())
 					self.exchangeDataListener.processOrderUpdate(response)
 
-					self._updatePosition(response)
+					requestSimulationLoop = True
 
-				# evaluate take profit market/limit orders
+				# evaluate take profit market/limit activation
 				if order.getOrderState() == OrderState.OPENED and \
 						order.getOrderType() in [OrderType.TAKE_PROFIT_LIMIT, OrderType.TAKE_PROFIT_MARKET] and \
 						(
-							(order.getOrderSide() == OrderSide.SELL and candle.getLow() >= order.getStopPrice()) or
-							(order.getOrderSide() == OrderSide.BUY and candle.getHigh() <= order.getStopPrice())
+								(order.getOrderSide() == OrderSide.SELL and candle.getLow() >= order.getStopPrice()) or
+								(order.getOrderSide() == OrderSide.BUY and candle.getHigh() <= order.getStopPrice())
 						):
 					self.log.info('>>> [' + str(candle) + ']')
-					self.log.info('Filling take profit order ' + str(order.getOrderId()))
-					response = OrderResponse(baseAsset = trade.getBaseAsset(), quoteAsset = trade.getQuoteAsset(),
-					                         orderSide = order.getOrderSide(),
-					                         orderType = order.getOrderType(),
-					                         origQty = order.getQty(), lastExecutedQty = order.getQty(),
-					                         sumExecutedQty = order.getQty(),
-					                         price = order.getPrice(),
-					                         orderState = OrderState.FILLED, orderTmstmp = candle.getCloseTime(),
-					                         clientOrderId = order.getIntOrderRef(),
-					                         extOrderRef = order.getIntOrderRef())
+					self.log.info('Activating take profit order ' + str(order.getOrderId()))
+					response = OrderResponse(orderState = OrderState.SL_TP_ACTIVATED, clientOrderId = order.getIntOrderRef())
 					self.exchangeDataListener.processOrderUpdate(response)
 
-					self._updatePosition(response)
+					requestSimulationLoop = True
 
-			# if there is no order pending confirmation, do not reiterate
-			if not self._existOrderPendingConf():
-				break
+			# if there is an order pending confirmation, reiterate
+			if self._existOrderPendingConf():
+				requestSimulationLoop = True
 
 	def setCretenExecDetlId(self, cretenExecDetlId):
 		self.cretenExecDetlId = cretenExecDetlId
