@@ -135,8 +135,8 @@ class ExchangeEventSimulator(object):
 				if order.getOrderState() == OrderState.OPENED and \
 						order.getOrderType() == OrderType.LIMIT and \
 						(
-							(order.getOrderSide() == OrderSide.SELL and candle.getClose() >= order.getPrice()) or
-							(order.getOrderSide() == OrderSide.BUY and candle.getClose() <= order.getPrice())
+							(order.getOrderSide() == OrderSide.SELL and candle.getUpperBody() >= order.getPrice()) or
+							(order.getOrderSide() == OrderSide.BUY and candle.getLowerBody() <= order.getPrice())
 						):
 					self.log.info('>>> [' + str(candle) + ']')
 					self.log.info('Filling limit order ' + str(order.getOrderId()))
@@ -165,7 +165,7 @@ class ExchangeEventSimulator(object):
 					                         orderType = order.getOrderType(),
 					                         origQty = order.getQty(), lastExecutedQty = order.getQty(),
 					                         sumExecutedQty = order.getQty(),
-					                         price = order.getPrice(),
+					                         price = order.getStopPrice(),
 					                         orderState = OrderState.FILLED, orderTmstmp = candle.getCloseTime(),
 					                         clientOrderId = order.getIntOrderRef(), extOrderRef = order.getIntOrderRef())
 					self.exchangeDataListener.processOrderUpdate(response)
@@ -186,7 +186,7 @@ class ExchangeEventSimulator(object):
 					                         orderType = order.getOrderType(),
 					                         origQty = order.getQty(), lastExecutedQty = order.getQty(),
 					                         sumExecutedQty = order.getQty(),
-					                         price = order.getPrice(),
+					                         price = order.getStopPrice(),
 					                         orderState = OrderState.FILLED, orderTmstmp = candle.getCloseTime(),
 					                         clientOrderId = order.getIntOrderRef(),
 					                         extOrderRef = order.getIntOrderRef())

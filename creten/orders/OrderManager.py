@@ -148,10 +148,8 @@ class OrderManager(object):
 					self.closeTrade(trade, orderResponse.getOrderTmstmp())
 
 			# handle closing of the trade based on the defined strategy
-			elif orderResponse.getOrderSide() == OrderSide.SELL and \
-					orderResponse.getOrderState() == OrderState.FILLED:
+			elif orderResponse.getOrderState() == OrderState.FILLED:
 				tradeCloseType = self.strategyManager.getStrategy(trade.strategy_exec_id).getTradeCloseType()
-
 				TradeCloseStrategy.evalTradeClose(tradeCloseType, trade, orderResponse, self)
 		else:
 			raise Exception('Short trades not supported!')
@@ -179,13 +177,13 @@ class OrderManager(object):
 					raise Exception('Price is less than minimum price! Price [' + str(price) + '], minPrice [' + str(rules.minPrice) + ']')
 
 				if price > rules.maxPrice:
-					raise Exception('Price is greater than maximum Price! Price [' + str(price) + '], maxPrice [' + str(rules.maxPrice) + ']')
+					raise Exception('Price is greater than maximum price! Price [' + str(price) + '], maxPrice [' + str(rules.maxPrice) + ']')
 
 				if (price - rules.minPrice) % rules.minPriceDenom != 0:
 					raise Exception('Price is not multiply of denomination! Price [' + str(price) + '], minPrice [' + str(rules.minPrice) + '],  minDenom [' + str(rules.minPriceDenom) + ']')
 
 				if price * qty < rules.minNotional:
-					raise Exception('Quantity and price is less than minimum notional! Qty [' + str(qty) + '], price [' + str(price) + '],  minNotional [' + str(rules.minNotional) + ']')
+					raise Exception('Quantity and price is less than minimum notional value! Qty [' + str(qty) + '], price [' + str(price) + '],  minNotional [' + str(rules.minNotional) + ']')
 
 			stopPrice = order.getStopPrice()
 			if stopPrice:
@@ -193,13 +191,13 @@ class OrderManager(object):
 					raise Exception('Stop price is less than minimum price! Stop price [' + str(stopPrice) + '], minPrice [' + str(rules.minPrice) + ']')
 
 				if stopPrice > rules.maxPrice:
-					raise Exception('Stop price is greater than maximum Price! Stop price [' + str(stopPrice) + '], maxPrice [' + str(rules.maxPrice) + ']')
+					raise Exception('Stop price is greater than maximum price! Stop price [' + str(stopPrice) + '], maxPrice [' + str(rules.maxPrice) + ']')
 
 				if (stopPrice - rules.minPrice) % rules.minPriceDenom != 0:
 					raise Exception('Stop price is not multiply of denomination! Stop price [' + str(stopPrice) + '], minPrice [' + str(rules.minPrice) + '],  minDenom [' + str(rules.minPriceDenom) + ']')
 
 				if stopPrice * qty < rules.minNotional:
-					raise Exception('Quantity and stop price is less than minimum notional! Qty [' + str(qty) + '], stop price [' + str(stopPrice) + '],  minNotional [' + str(rules.minNotional) + ']')
+					raise Exception('Quantity and stop price is less than minimum notional value! Qty [' + str(qty) + '], stop price [' + str(stopPrice) + '],  minNotional [' + str(rules.minNotional) + ']')
 
 		return True
 
@@ -320,19 +318,9 @@ class OrderManager(object):
 					stopPrice = ('{:.' + str(rules.quoteAssetPrecision) + 'f}').format(order.getStopPrice()) if order.getStopPrice() else None
 					self.log.debug('Values to be sent: qty [' + str(qty) + '], price [' + str(price) + '], stop price [' + str(stopPrice) + ']')
 
-					response = None
-					if order.getOrderSide() == OrderSide.BUY and order.getOrderType() == OrderType.MARKET:
-						response = self.exchangeClient.createBuyMarketOrder(trade.base_asset, trade.quote_asset, qty, clientOrderId = order.getIntOrderRef(), currMarketPrice = dbOrder.price)
-					elif order.getOrderSide() == OrderSide.BUY and order.getOrderType() == OrderType.LIMIT:
-						response = self.exchangeClient.createBuyLimitOrder(trade.base_asset, trade.quote_asset, qty, price, clientOrderId = order.getIntOrderRef())
-					elif order.getOrderSide() == OrderSide.BUY and order.getOrderType() == OrderType.STOP_LOSS_LIMIT:
-						response = self.exchangeClient.createBuyStopLossLimitOrder(trade.base_asset, trade.quote_asset, qty, stopPrice, price, clientOrderId = order.getIntOrderRef())
-					elif order.getOrderSide() == OrderSide.SELL and order.getOrderType() == OrderType.MARKET:
-						response = self.exchangeClient.createSellMarketOrder(trade.base_asset, trade.quote_asset, qty, clientOrderId = order.getIntOrderRef(), currMarketPrice = dbOrder.price)
-					elif order.getOrderSide() == OrderSide.SELL and order.getOrderType() == OrderType.LIMIT:
-						response = self.exchangeClient.createSellLimitOrder(trade.base_asset, trade.quote_asset, qty, price, clientOrderId = order.getIntOrderRef())
-					elif order.getOrderSide() == OrderSide.SELL and order.getOrderType() == OrderType.STOP_LOSS_LIMIT:
-						response = self.exchangeClient.createSellStopLossLimitOrder(trade.base_asset, trade.quote_asset, qty, stopPrice, stopPrice, clientOrderId = order.getIntOrderRef())
+					response = self.exchangeClient.createOrder(order.getOrderSide(), order.getOrderType(),
+					                                           trade.base_asset, trade.quote_asset, qty,
+					                                            stopPrice, price, order.getIntOrderRef())
 
 					self.log.debug('Response: ' + str(response.getRawData()))
 

@@ -187,7 +187,7 @@ After running either of the examples you should see `creten` to execute the sele
   
 ## Usage
 
-Okay, you managed to install `creten` and execute some of the examples successfuly. What does it take to create a new strategy from the scratch and backtest it? Keep on reading.  
+Okay, you managed to install `creten` and execute some of the examples successfully. What does it take to create a new strategy from the scratch and backtest it? Keep on reading.  
 
 In the following paragraphs we are going to create a simple strategy based on the RSI indicator. The strategy will first wait until RSI gets oversold (its value decreases below 20) and then it will wait until it gets back over 50. At this point it files a buy market order for 1 BTC against USDT and a stop loss sell order at a price of say 80 USDT lower than the buy price. The strategy will file a sell market order as soon as RSI gets overbought above 80. This strategy will hardly make money consistently but it will serve for illustration of `creten`'s capabilities nicely. The strategy will be backtested on binance between 01/04/2018 and 31/08/2018 at 1 hour timeframe.
 

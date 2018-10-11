@@ -50,7 +50,7 @@ class RSIStrategy(CretenStrategy):
 				# a buy market order of 1 BTC
 				orderBuy = OrderBuyMarket(qty = 1)
 				# a stoploss sell order at price lower by 80 compared to current price
-				orderStopLoss = OrderSellStopLossLimit(qty = 1, stopPrice = candle.getClose() - 80, price = candle.getClose() - 80)
+				orderStopLoss = OrderSellStopLossLimit(qty = 1, stopPrice = 10000, price = candle.getClose() - 80)
 
 				# initiate the trade with the two above orders
 				self.openTrade(TradeType.LONG, candle, [orderBuy, orderStopLoss])

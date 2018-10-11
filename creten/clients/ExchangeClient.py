@@ -100,27 +100,7 @@ class ExchangeClient(object):
 		pass
 
 	@abstractmethod
-	def createBuyMarketOrder(self, baseAsset, quoteAsset, qty, clientOrderId, currMarketPrice = None):
-		pass
-
-	@abstractmethod
-	def createBuyLimitOrder(self, baseAsset, quoteAsset, qty, price, clientOrderId):
-		pass
-
-	@abstractmethod
-	def createBuyStopLossLimitOrder(self, baseAsset, quoteAsset, qty, stopPrice, price, clientOrderId):
-		pass
-
-	@abstractmethod
-	def createSellMarketOrder(self, baseAsset, quoteAsset, qty, clientOrderId, currMarketPrice = None):
-		pass
-
-	@abstractmethod
-	def createSellLimitOrder(self, baseAsset, quoteAsset, qty, price, clientOrderId):
-		pass
-
-	@abstractmethod
-	def createSellStopLossLimitOrder(self, baseAsset, quoteAsset, qty, stopPrice, price, clientOrderId):
+	def createOrder(self, orderSide, orderType, baseAsset, quoteAsset, qty, stopPrice, price, clientOrderId):
 		pass
 
 	@abstractmethod
