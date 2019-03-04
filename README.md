@@ -516,3 +516,5 @@ If you feel you want to get in touch either with developers or community, you ca
 ## Warranty
 
 There is none. As it goes with open source, neither `creten` nor any of its developers is responsible for any loss due to your strategy or bugs in the code. By using it you acknowledge that you are aware of the risk and will suffer all potential consequencies. `creten` does not give any financial advice. If unsure, do not run `creten` in the real trading mode.
+
+		
