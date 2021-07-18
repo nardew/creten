@@ -503,7 +503,11 @@ The complete strategy (with some tweaks) can be found in `creten/strategy_reposi
 I am glad you asked! `creten` is still a young project and the biggest contribution at the moment is to:
 - spread the word
 - file bugs, issues, feature requests or any critique
-- feel free to come with your own idea :-)
+- donate an arbitrary tip
+  * `BTC`: `3GJPT6H6WeuTWR2KwDSEN5qyJq95LEErzf`
+  * `ETH`: `0xC7d8673Ee1B01f6F10e40aA416a1b0A746eaBe68`
+  * `Binance Smart Chain tokens`: `0xe37FaB52ed4c1C9a3d80896f2001Cb3284a1b619`
+  * `XMR`: `87vdCaWFN2YJEk3HKVJNaPBFsuwZTJocRfpGJ747dPQrFcrs6SQTmA3XDGyWUPoALuNnXezEbJXkbY8Y4VSxG4ReEFqxy5m`
 
 ## Get in touch
 
